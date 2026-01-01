@@ -62,7 +62,8 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   void initState() {
-   
+    emailController.text = 'elsaidatif@gmail.com';
+    passController.text = '123456789';
     super.initState();
   }
 

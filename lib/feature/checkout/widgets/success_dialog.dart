@@ -6,8 +6,8 @@ import 'package:hungry/shared/custom_button.dart';
 import 'package:hungry/shared/custom_text.dart';
 
 class SuccessDialog extends StatelessWidget {
-  const SuccessDialog({super.key});
-
+  const SuccessDialog({super.key, this.onTap});
+final void Function()? onTap;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -47,7 +47,7 @@ class SuccessDialog extends StatelessWidget {
                   textAlign: TextAlign.center,
             ),
             Gap(30),
-            CustomButton(text:'Close',width: 180,onTap: () => Navigator.pop(context),)
+            CustomButton(text:'Close',width: 180,onTap:onTap,)
           ],
         ),
       ),

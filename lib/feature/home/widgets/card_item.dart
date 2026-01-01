@@ -26,9 +26,9 @@ class CardItem extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           gradient: LinearGradient(
-            begin: Alignment.topLeft,
+            begin: Alignment.topCenter,
             end: Alignment.bottomRight,
-            colors: [Colors.black26,Colors.black12, Colors.white60, Colors.white],
+            colors: [AppColors.primaryColor,AppColors.primaryColor.withOpacity(0.2), Colors.white60, Colors.white],
           ),
         ),
         child: Padding(

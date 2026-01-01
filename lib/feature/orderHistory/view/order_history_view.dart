@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:hungry/core/constant/app_colors.dart';
 import 'package:hungry/feature/orderHistory/data/order_history_model.dart';
 import 'package:hungry/feature/orderHistory/data/order_history_repo.dart';
 import 'package:hungry/shared/custom_button.dart';
@@ -44,25 +45,19 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
           builder: (context, snapshot) {
             // Loading
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CupertinoActivityIndicator(),
-              );
+              return const Center(child: CupertinoActivityIndicator());
             }
 
             // Error
             if (snapshot.hasError) {
-              return Center(
-                child: Text(snapshot.error.toString()),
-              );
+              return Center(child: Text(snapshot.error.toString()));
             }
 
             final orders = snapshot.data;
 
             // Empty
             if (orders == null || orders.isEmpty) {
-              return const Center(
-                child: CustomText(text: 'No orders found'),
-              );
+              return const Center(child: CustomText(text: 'No orders found'));
             }
 
             // Data
@@ -76,6 +71,7 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
 
                   return Card(
                     margin: const EdgeInsets.symmetric(vertical: 10),
+                    color: AppColors.primaryColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -108,12 +104,13 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
                                   text: 'Order #${order.id}',
                                   fontWeight: FontWeight.bold,
                                   size: 16,
+                                  color: Colors.white,
                                 ),
                                 const Gap(4),
                                 CustomText(
                                   text: 'Date: ${order.createdAt}',
                                   size: 14,
-                                  color: Colors.grey.shade700,
+                                  color: Colors.white60,
                                 ),
                                 const Gap(4),
                                 CustomText(
@@ -129,6 +126,7 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
                                   text: 'Price: ${order.totalPrice}\$',
                                   size: 14,
                                   fontWeight: FontWeight.bold,
+                                  color: Colors.white,
                                 ),
 
                                 const Gap(10),

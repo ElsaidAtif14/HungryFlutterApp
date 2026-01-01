@@ -71,24 +71,33 @@ class CartRepo {
   // }
 
   /// حذف منتج من الكارت
-/// حذف منتج من الكارت
-Future<void> removeCartItem(int productId) async {
-  try {
-    final res = await _apiService.delete('/cart/remove/$productId');
+  /// حذف منتج من الكارت
+  Future<void> removeCartItem(int productId) async {
+    try {
+      final res = await _apiService.delete('/cart/remove/$productId');
 
-    if (res is! Map<String, dynamic>) {
-      throw ApiError(message: 'Unexpected response from server');
+      if (res is! Map<String, dynamic>) {
+        throw ApiError(message: 'Unexpected response from server');
+      }
+
+      final code = res['code'];
+      final msg = res['message'];
+
+      if (code != 200 && code != 201) {
+        throw ApiError(message: msg ?? 'Failed to remove cart item');
+      }
+    } catch (e) {
+      rethrow;
     }
-
-    final code = res['code'];
-    final msg = res['message'];
-
-    if (code != 200 && code != 201) {
-      throw ApiError(message: msg ?? 'Failed to remove cart item');
-    }
-  } catch (e) {
-    rethrow;
   }
-}
-
+ /// مسح كل عناصر الكارت بأمان
+  Future<void> clearCart(List<CartItemModel> items) async {
+    for (var item in items) {
+      try {
+        await removeCartItem(item.itemId); // حاول تمسح العنصر
+      } catch (_) {
+        // تجاهل أي error زي "item not found"
+      }
+    }
+  }
 }

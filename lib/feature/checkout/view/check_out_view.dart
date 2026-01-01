@@ -5,9 +5,11 @@ import 'package:hungry/core/network/api_error.dart';
 import 'package:hungry/feature/auth/data/auth_repo.dart';
 import 'package:hungry/feature/auth/data/user_model.dart';
 import 'package:hungry/feature/cart/data/cart_model.dart';
+import 'package:hungry/feature/cart/data/cart_repo.dart';
 import 'package:hungry/feature/checkout/widgets/order_deatil_widget.dart';
 import 'package:hungry/feature/checkout/widgets/success_dialog.dart';
 import 'package:hungry/feature/orderHistory/data/order_history_repo.dart';
+import 'package:hungry/root.dart';
 import 'package:hungry/shared/custom_button.dart';
 import 'package:hungry/shared/custom_snack_bar.dart';
 import 'package:hungry/shared/custom_text.dart';
@@ -34,6 +36,8 @@ class _CheckOutViewState extends State<CheckOutView> {
   bool isAddedLoading = false;
 
   final AuthRepo authRepo = AuthRepo();
+  final CartRepo cartRepo = CartRepo();
+
   UserModel? userModel;
 
   @override
@@ -222,12 +226,18 @@ class _CheckOutViewState extends State<CheckOutView> {
                           final request = CartRequestModel(cartItems);
 
                           await orderHistoryRepo.addToOrder(request);
-
+                          await cartRepo.clearCart(widget.cartResponseModel.data.items);
                           showDialog(
                             context: context,
-                            builder: (_) => const Dialog(
+                            builder: (_) =>  Dialog(
                               backgroundColor: Colors.transparent,
-                              child: SuccessDialog(),
+                              child: SuccessDialog(
+                                onTap: () {
+                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
+                                    return Root();
+                                  }));
+                                },
+                              ),
                             ),
                           );
                         } catch (e) {

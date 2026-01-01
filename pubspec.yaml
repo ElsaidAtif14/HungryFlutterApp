@@ -1,0 +1,44 @@
+name: hungry
+description: "A new Flutter project."
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  device_preview: ^1.3.1
+  dio: ^5.9.0
+  cached_network_image: ^3.4.1
+  flutter_svg: ^2.2.3
+  gap: ^3.0.1
+  image_picker: ^1.2.1
+  shared_preferences: ^2.5.3
+  skeletonizer: ^2.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Assets
+  assets:
+    - assets/images/
+    - assets/images/test/
+    - assets/images/details/
+    - assets/images/icons/
+
+  # # Fonts
+  # fonts:
+  #   - family: NotoSans
+  #     fonts:
+  #       - asset: assets/fonts/NotoSans-Regular.ttf
+  #       - asset: assets/fonts/NotoSans-Bold.ttf
+  #         weight: 700

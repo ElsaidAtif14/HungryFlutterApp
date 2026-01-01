@@ -12,10 +12,7 @@ class ApiExceptions {
       }
     }
 
-    if(statusCode == 302) {
-      throw ApiError(message: 'This Email Already Taken');
-    }
-
+   
 
     // print(statusCode);
     // print(data);

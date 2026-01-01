@@ -233,9 +233,7 @@ class _CheckOutViewState extends State<CheckOutView> {
                               backgroundColor: Colors.transparent,
                               child: SuccessDialog(
                                 onTap: () {
-                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
-                                    return Root();
-                                  }));
+                                Navigator.pop(context);
                                 },
                               ),
                             ),

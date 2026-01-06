@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hungry/core/constant/app_colors.dart';
+import 'package:hungry/core/utils/app_router.dart';
 import 'package:hungry/core/utils/pref_helper.dart';
-import 'package:hungry/feature/auth/view/login_view.dart';
-import 'package:hungry/feature/auth/view/signup_view.dart';
-import 'package:hungry/root.dart';
 
 class Splach extends StatefulWidget {
   const Splach({super.key});
@@ -59,12 +58,13 @@ class _SplachState extends State<Splach> with SingleTickerProviderStateMixin {
 
     final token = await PrefHelper.getToken();
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => token == null ? const LoginView() : const Root(),
-      ),
-    );
+    if (mounted) {
+      if (token == null) {
+        GoRouter.of(context).pushReplacement(AppRouter.kLogin);
+      } else {
+        GoRouter.of(context).pushReplacement(AppRouter.kRoot);
+      }
+    }
   }
 
   @override

@@ -1,15 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hungry/core/constant/app_colors.dart';
 import 'package:hungry/core/network/api_error.dart';
+import 'package:hungry/core/utils/app_router.dart';
 import 'package:hungry/feature/auth/data/auth_repo.dart';
-import 'package:hungry/feature/auth/view/login_view.dart';
+import 'package:hungry/feature/auth/widgets/auth_footer.dart';
+import 'package:hungry/feature/auth/widgets/auth_form_card.dart';
+import 'package:hungry/feature/auth/widgets/auth_header.dart';
 import 'package:hungry/feature/auth/widgets/custom_auth_button.dart';
-import 'package:hungry/root.dart';
 import 'package:hungry/shared/custom_snack_bar.dart';
-import 'package:hungry/shared/custom_text.dart';
 import 'package:hungry/shared/custom_text_field.dart';
 
 class SignupView extends StatefulWidget {
@@ -40,10 +41,7 @@ class _SignupViewState extends State<SignupView> {
           password: passController.text.trim(),
         );
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => Root()),
-        );
+        GoRouter.of(context).pushReplacement(AppRouter.kRoot);
       } catch (e) {
         String msg = 'Unhandled error';
         if (e is ApiError) msg = e.message;
@@ -56,47 +54,28 @@ class _SignupViewState extends State<SignupView> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.sizeOf(context);
-
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: PopScope(
         canPop: false,
-        child: Scaffold(
-          backgroundColor: Colors.white,
-          body: Form(
-            key: formKey,
-            child: Center(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom,
-                ),
-                child: Column(
-                  children: [
-                    const Gap(120),
-                    SvgPicture.asset(
-                      'assets/images/logo.svg',
-                      color: AppColors.primaryColor,
-                    ),
-                    const Gap(8),
-                    const CustomText(
-                      text: 'Welcome To our Food App',
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryColor,
-                    ),
-                    const Gap(60),
-
-                    /// 🔹 Card
-                    Container(
-                      margin: const EdgeInsets.all(16),
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        color: AppColors.primaryColor.withOpacity(0.4),
+        child: AbsorbPointer(
+          absorbing: isLoading,
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            body: Form(
+              key: formKey,
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: Column(
+                    children: [
+                      AuthHeader(
+                        title: 'Welcome To our Food App',
                       ),
-                      child: Column(
+                      AuthFormCard(
                         children: [
-                          const Gap(30),
                           CustomTextField(
                             controller: nameController,
                             hint: 'Name',
@@ -114,8 +93,7 @@ class _SignupViewState extends State<SignupView> {
                             hint: 'Password',
                             isPassword: true,
                           ),
-                          const Gap(30),
-
+                          const Gap(20),
                           isLoading
                               ? const CupertinoActivityIndicator(
                                   color: AppColors.primaryColor,
@@ -132,47 +110,14 @@ class _SignupViewState extends State<SignupView> {
                             fontColor: Colors.black,
                             fontweight: FontWeight.bold,
                             onTap: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const LoginView(),
-                                ),
-                              );
+                              GoRouter.of(context).push(AppRouter.kLogin);
                             },
                           ),
-                          // /// 🔹 Actions
-                          // Row(
-                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //   children: [
-
-                          //     const Gap(18),
-                          //     CustomAuthButton(
-                          //       width: size.width * 0.37,
-                          //       text: 'Guest',
-                          //       fontColor: Colors.black,
-                          //       fontweight: FontWeight.bold,
-                          //       onTap: () {
-                          //         Navigator.pushReplacement(
-                          //           context,
-                          //           MaterialPageRoute(builder: (_) => Root()),
-                          //         );
-                          //       },
-                          //     ),
-                          //   ],
-                          // ),
                         ],
                       ),
-                    ),
-
-                    const Gap(140),
-                    const CustomText(
-                      text: '@ john Snow 2019',
-                      size: 14,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryColor,
-                    ),
-                    const Gap(30),
-                  ],
+                      const AuthFooter(),
+                    ],
+                  ),
                 ),
               ),
             ),

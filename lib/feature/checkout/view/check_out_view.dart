@@ -1,16 +1,17 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hungry/core/network/api_error.dart';
+import 'package:hungry/core/utils/app_router.dart';
 import 'package:hungry/feature/auth/data/auth_repo.dart';
 import 'package:hungry/feature/auth/data/user_model.dart';
 import 'package:hungry/feature/cart/data/cart_model.dart';
 import 'package:hungry/feature/cart/data/cart_repo.dart';
+import 'package:hungry/feature/checkout/widgets/checkout_bottom_sheet.dart';
 import 'package:hungry/feature/checkout/widgets/order_deatil_widget.dart';
+import 'package:hungry/feature/checkout/widgets/payment_methods_section.dart';
 import 'package:hungry/feature/checkout/widgets/success_dialog.dart';
 import 'package:hungry/feature/orderHistory/data/order_history_repo.dart';
-import 'package:hungry/root.dart';
-import 'package:hungry/shared/custom_button.dart';
 import 'package:hungry/shared/custom_snack_bar.dart';
 import 'package:hungry/shared/custom_text.dart';
 
@@ -88,173 +89,66 @@ class _CheckOutViewState extends State<CheckOutView> {
                 total: orderTotal.toStringAsFixed(2),
               ),
               const Gap(40),
-              const CustomText(
-                text: 'Payment methods',
-                size: 20,
-                fontWeight: FontWeight.w500,
+              PaymentMethodsSection(
+                selectedMethod: selectedMethod,
+                userModel: userModel,
+                onMethodChanged: (method) {
+                  setState(() => selectedMethod = method);
+                },
               ),
-              const Gap(20),
-
-              // Cash
-              ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 5,
-                  horizontal: 16,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                tileColor: const Color(0xff3C2F2F),
-                leading: Image.asset(
-                  'assets/images/icons/dollar.png',
-                  width: 50,
-                ),
-                title: const CustomText(
-                  text: 'Cash on Delivery',
-                  color: Colors.white,
-                ),
-                trailing: Radio<String>(
-                  activeColor: Colors.white,
-                  value: 'cash',
-                  groupValue: selectedMethod,
-                  onChanged: (v) => setState(() => selectedMethod = v!),
-                ),
-                onTap: () => setState(() => selectedMethod = 'cash'),
-              ),
-
-              const Gap(20),
-
-              // Visa
-              if (userModel?.visa != null)
-                ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 5,
-                    horizontal: 16,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  tileColor: Colors.blue.shade900,
-                  leading: Image.asset(
-                    'assets/images/icons/profileVisa.png',
-                    width: 50,
-                  ),
-                  title: const CustomText(
-                    text: 'Debit card',
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  subtitle: CustomText(
-                    text: userModel!.visa!,
-                    color: Colors.white,
-                  ),
-                  trailing: Radio<String>(
-                    activeColor: Colors.white,
-                    value: 'visa',
-                    groupValue: selectedMethod,
-                    onChanged: (v) => setState(() => selectedMethod = v!),
-                  ),
-                  onTap: () => setState(() => selectedMethod = 'visa'),
-                ),
-
-              const Gap(300),
             ],
           ),
         ),
       ),
-      bottomSheet: Container(
-        height: 120,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.shade800,
-              blurRadius: 15,
-              offset: const Offset(0, 1),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const CustomText(
-                    text: 'Total',
-                    size: 20,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  CustomText(
-                    text: widget.cartResponseModel.data.totalPrice,
-                    size: 27,
-                  ),
-                ],
+      bottomSheet: CheckoutBottomSheet(
+        totalPrice: widget.cartResponseModel.data.totalPrice,
+        isLoading: isAddedLoading,
+        onPayNow: () async {
+          try {
+            setState(() => isAddedLoading = true);
+
+            final cartItems = widget.cartResponseModel.data.items
+                .map((item) {
+                  return CartModel(
+                    productId: item.productId,
+                    quantity: item.quantity,
+                    spicy: (item.spicy is String)
+                        ? double.parse(item.spicy)
+                        : (item.spicy as num).toDouble(),
+                    toppings: item.toppings.map((t) => t.id).toList(),
+                    sideOptions: item.sideOptions.map((s) => s.id).toList(),
+                  );
+                })
+                .toList();
+
+            final request = CartRequestModel(cartItems);
+
+            await orderHistoryRepo.addToOrder(request);
+            await cartRepo.clearCart(widget.cartResponseModel.data.items);
+            showDialog(
+              context: context,
+              builder: (_) => Dialog(
+                backgroundColor: Colors.transparent,
+                child: SuccessDialog(
+                  onTap: () {
+                    GoRouter.of(context).pushReplacement(AppRouter.kRoot);
+                  },
+                ),
               ),
-              isAddedLoading
-                  ? CupertinoActivityIndicator()
-                  : CustomButton(
-                      text: 'Pay Now',
-                      onTap: () async {
-                        try {
-                          setState(() => isAddedLoading = true);
-
-                          final cartItems = widget.cartResponseModel.data.items
-                              .map((item) {
-                                return CartModel(
-                                  productId: item.productId,
-                                  quantity: item.quantity,
-                                  spicy: (item.spicy is String)
-                                      ? double.parse(item.spicy)
-                                      : (item.spicy as num).toDouble(),
-                                  toppings: item.toppings
-                                      .map((t) => t.id)
-                                      .toList(),
-                                  sideOptions: item.sideOptions
-                                      .map((s) => s.id)
-                                      .toList(),
-                                );
-                              })
-                              .toList();
-
-                          final request = CartRequestModel(cartItems);
-
-                          await orderHistoryRepo.addToOrder(request);
-                          await cartRepo.clearCart(widget.cartResponseModel.data.items);
-                          showDialog(
-                            context: context,
-                            builder: (_) =>  Dialog(
-                              backgroundColor: Colors.transparent,
-                              child: SuccessDialog(
-                                onTap: () {
-                                Navigator.pop(context);
-                                },
-                              ),
-                            ),
-                          );
-                        } catch (e) {
-                          String msg = 'Something went wrong ❌';
-                          if (e is ApiError && e.message.isNotEmpty) {
-                            msg = e.message;
-                          }
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(customSnackBar(msg));
-                        } finally {
-                          if (!mounted) return;
-                          setState(() => isAddedLoading = false);
-                        }
-                      },
-                    ),
-            ],
-          ),
-        ),
+            );
+          } catch (e) {
+            String msg = 'Something went wrong ❌';
+            if (e is ApiError && e.message.isNotEmpty) {
+              msg = e.message;
+            }
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(customSnackBar(msg));
+          } finally {
+            if (!mounted) return;
+            setState(() => isAddedLoading = false);
+          }
+        },
       ),
     );
   }

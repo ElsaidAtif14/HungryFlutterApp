@@ -1,8 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:hungry/core/constant/app_colors.dart';
+import 'package:hungry/feature/cart/widgets/cart_item_controls.dart';
+import 'package:hungry/feature/cart/widgets/cart_remove_button.dart';
 import 'package:hungry/shared/custom_text.dart';
+
 class CartItem extends StatelessWidget {
   const CartItem({
     super.key,
@@ -10,7 +11,7 @@ class CartItem extends StatelessWidget {
     required this.text,
     required this.desc,
     required this.number,
-    required this.isRemoving, // 👈 جديد
+    required this.isRemoving,
     this.onMines,
     this.onAdd,
     this.onRemove,
@@ -18,7 +19,7 @@ class CartItem extends StatelessWidget {
 
   final String image, text, desc;
   final int number;
-  final bool isRemoving; // 👈 جديد
+  final bool isRemoving;
   final Function()? onMines;
   final Function()? onAdd;
   final Function()? onRemove;
@@ -37,7 +38,7 @@ class CartItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Image.network(image, width: 100),
-                Container(
+                SizedBox(
                   width: 150,
                   child: CustomText(
                     text: text,
@@ -52,62 +53,15 @@ class CartItem extends StatelessWidget {
             /// -------- Right --------
             Column(
               children: [
-                Row(
-                  children: [
-                    GestureDetector(
-                      onTap: onAdd,
-                      child: CircleAvatar(
-                        backgroundColor: AppColors.primaryColor,
-                        child: const Icon(
-                          CupertinoIcons.add,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const Gap(20),
-                    CustomText(
-                      text: '$number',
-                      size: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    const Gap(20),
-                    GestureDetector(
-                      onTap: onMines,
-                      child: CircleAvatar(
-                        backgroundColor: AppColors.primaryColor,
-                        child: const Icon(
-                          CupertinoIcons.minus,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
+                CartItemControls(
+                  number: number,
+                  onAdd: onAdd,
+                  onMines: onMines,
                 ),
                 const Gap(20),
-
-                /// -------- Remove Button / Loading --------
-                SizedBox(
-                  height: 45,
-                  width: 130,
-                  child: isRemoving
-                      ? const Center(
-                          child: CupertinoActivityIndicator(),
-                        )
-                      : GestureDetector(
-                          onTap: onRemove,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryColor,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Center(
-                              child: CustomText(
-                                text: 'Remove',
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
+                CartRemoveButton(
+                  isRemoving: isRemoving,
+                  onRemove: onRemove,
                 ),
               ],
             ),

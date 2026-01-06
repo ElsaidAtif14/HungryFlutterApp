@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hungry/core/constant/app_colors.dart';
-import 'package:hungry/shared/custom_text.dart';
+import 'package:hungry/feature/home/widgets/category_item.dart';
 
 class FoodCategory extends StatefulWidget {
   const FoodCategory({
@@ -20,7 +19,7 @@ class _FoodCategoryState extends State<FoodCategory> {
 
   @override
   void initState() {
-    selectedIndex=widget.selectedIndex;
+    selectedIndex = widget.selectedIndex;
     super.initState();
   }
 
@@ -31,28 +30,14 @@ class _FoodCategoryState extends State<FoodCategory> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: List.generate(widget.category.length, (index) {
-          return GestureDetector(
+          return CategoryItem(
+            category: widget.category[index],
+            isSelected: selectedIndex == index,
             onTap: () {
               setState(() {
                 selectedIndex = index;
               });
             },
-            child: Container(
-              margin: EdgeInsets.only(right: 8),
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 27),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: selectedIndex == index
-                    ? AppColors.primaryColor
-                    : Color(0xffF3F4F6),
-              ),
-              child: CustomText(
-                color: selectedIndex == index ? Colors.white : Colors.black,
-
-                text: widget.category[index],
-                fontWeight: FontWeight.w600,
-              ),
-            ),
           );
         }),
       ),

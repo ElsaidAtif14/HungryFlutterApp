@@ -2,11 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hungry/feature/cart/data/cart_model.dart';
 import 'package:hungry/feature/cart/data/cart_repo.dart';
+import 'package:hungry/feature/cart/widgets/cart_app_bar.dart';
+import 'package:hungry/feature/cart/widgets/cart_bottom_sheet.dart';
 import 'package:hungry/feature/cart/widgets/cart_item.dart';
-import 'package:hungry/feature/checkout/view/check_out_view.dart';
-import 'package:hungry/shared/custom_button.dart';
 import 'package:hungry/shared/custom_snack_bar.dart';
-import 'package:hungry/shared/custom_text.dart';
 
 class CartView extends StatefulWidget {
   const CartView({super.key});
@@ -82,16 +81,7 @@ class _CartViewState extends State<CartView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const CustomText(
-          text: 'My Cart',
-          fontWeight: FontWeight.bold,
-          size: 24,
-        ),
-        toolbarHeight: 30,
-        backgroundColor: Colors.white,
-      ),
+      appBar: const CartAppBar(),
       body: isLoading
           ? const Center(child: CupertinoActivityIndicator())
           : RefreshIndicator(
@@ -109,7 +99,7 @@ class _CartViewState extends State<CartView> {
                       text: item.name,
                       desc: '',
                       number: quantities[index],
-                      isRemoving: removingItemId == item.itemId, // هنا
+                      isRemoving: removingItemId == item.itemId,
                       onAdd: () => onAdd(index),
                       onMines: () => onMines(index),
                       onRemove: () => removeCartIteam(item.itemId),
@@ -118,46 +108,8 @@ class _CartViewState extends State<CartView> {
                 ),
               ),
             ),
-      bottomSheet: Container(
-        padding: const EdgeInsets.all(20),
-        height: 100,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
-          boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 10)],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const CustomText(text: 'Total', size: 16),
-                CustomText(
-                  text:
-                      '\$${(cartResponse != null && cartResponse!.data.items.isNotEmpty) ? cartResponse!.data.totalPrice : '0.00'}',
-                  size: 24,
-                ),
-              ],
-            ),
-            CustomButton(
-              text: 'Checkout',
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => CheckOutView(
-                    totalPrice:
-                        cartResponse?.data.totalPrice.toString() ?? '0.00',
-                    cartResponseModel: cartResponse!,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+      bottomSheet: CartBottomSheet(
+        cartResponse: cartResponse,
       ),
     );
   }

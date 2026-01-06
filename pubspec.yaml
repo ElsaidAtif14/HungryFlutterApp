@@ -8,22 +8,24 @@ environment:
   sdk: ^3.8.1
 
 dependencies:
-  flutter:
-    sdk: flutter
+  cached_network_image: ^3.4.1
   cupertino_icons: ^1.0.8
   device_preview: ^1.3.1
   dio: ^5.9.0
-  cached_network_image: ^3.4.1
+  flutter:
+    sdk: flutter
   flutter_svg: ^2.2.3
   gap: ^3.0.1
+  go_router: ^17.0.0
   image_picker: ^1.2.1
   shared_preferences: ^2.5.3
   skeletonizer: ^2.1.2
+  toggle_switch: ^2.3.0
 
 dev_dependencies:
+  flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
 
 flutter:
   uses-material-design: true
@@ -34,7 +36,6 @@ flutter:
     - assets/images/test/
     - assets/images/details/
     - assets/images/icons/
-
   # # Fonts
   # fonts:
   #   - family: NotoSans
